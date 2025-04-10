@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import 'package:weather/location.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({super.key});
@@ -11,17 +13,21 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen> {
 
   void getLocation()async{
-
-  await Geolocator.checkPermission();
-  await Geolocator.requestPermission();
-
-  final LocationSettings locationSettings = LocationSettings(
-  accuracy: LocationAccuracy.low,
-  distanceFilter: 100,);
-
-  Position position = await Geolocator.getCurrentPosition(
-    locationSettings: locationSettings,);
+    Location locations = Location();
+    await locations.getCurrentLocation();
+    print(locations.latitude);
+    print(locations.longitude);
   }
+
+  void getData()async{
+    http.Response response = await http.get(
+      Uri.parse(
+        'https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=1b9420966cd82474a099341b6d49dae0'));
+    print(response.body);
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +68,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           GestureDetector(
             onTap: (){
               getLocation();
+              getData();
             },
             child: Container(
               padding: EdgeInsets.all(19),
